@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * packageName   : com.proj.travel.service
@@ -50,5 +52,15 @@ public class CitySearchHistoryService {
         }else{
             createCitySearchHistory(userId, cityId);
         }
+    }
+
+    public List<City> getSearchedCities(Long userId) {
+        LocalDateTime now = LocalDateTime.now();
+        List<CitySearchHistory> searchedCities = citySearchHistoryRepository.findTop10ByUserIdAndSearchedAtIsAfterOrderBySearchedAtDesc(userId, now.minusDays(7));
+        if(searchedCities.isEmpty()) {
+            return null;
+        }
+
+        return searchedCities.stream().map(CitySearchHistory::getCity).collect(Collectors.toList());
     }
 }

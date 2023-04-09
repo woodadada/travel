@@ -54,8 +54,8 @@ public class TravelApplication implements CommandLineRunner {
 
             Travel travel = Travel.builder().city(city)
                     .title(city.getCityName() + " 여행")
-                    .startTime(now)
-                    .endTime(now.plusDays(i))
+                    .startTime(now.minusDays(i))
+                    .endTime(now.plusDays(i + 10))
                     .build();
             travelList.add(travel);
 
@@ -66,10 +66,12 @@ public class TravelApplication implements CommandLineRunner {
         travelRepository.saveAll(travelList);
         List<User> findUserList = userRepository.findAll();
         for (int i = 0; i < 10; i++) {
-            Reservation reservation = Reservation.builder().travel(travelList.get(9 - i)).userId(findUserList.get(i).getUserId()).build();
+            Reservation reservation = Reservation.builder().travel(travelList.get(i)).userId(findUserList.get(i).getUserId()).build();
             reservationList.add(reservation);
         }
 
         reservationRepository.saveAll(reservationList);
+        reservationRepository.save(Reservation.builder().travel(travelList.get(5)).userId(findUserList.get(0).getUserId()).build());
+        reservationRepository.save(Reservation.builder().travel(travelList.get(8)).userId(findUserList.get(0).getUserId()).build());
     }
 }

@@ -7,15 +7,14 @@ import com.proj.travel.model.entity.City;
 import com.proj.travel.model.entity.Reservation;
 import com.proj.travel.model.entity.Travel;
 import com.proj.travel.repository.CityRepository;
-import com.proj.travel.repository.CitySearchHistoryRepository;
 import com.proj.travel.repository.TravelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,9 +37,10 @@ public class CityService {
     private final TravelRepository travelRepository;
     private final TravelService travelService;
     private final ReservationService reservationService;
-    private final CitySearchHistoryRepository citySearchHistoryRepository;
     private final CitySearchHistoryService citySearchHistoryService;
 
+
+    private final int MAX_SIZE = 10;
 
     public CityDto createCity(CityDto cityDto) {
         City city = new City(cityDto);
@@ -93,22 +93,72 @@ public class CityService {
          * 위의 조건에 해당하지 않는 모든 도시 : 무작위
          */
         LocalDateTime now = LocalDateTime.now();
+        List<City> tempList = new ArrayList<>();
 
         List<Reservation> reservations = reservationService.getReservations(userId);
         //여행 중인 도시 : 여행 시작일이 빠른 것부터
-        getCitiesByTravels(travelService.getActiveTravels(reservations));
-        //여행이 예정된 도시 : 여행 시작일이 가까운 것부터
-        getCitiesByTravels(travelService.getFutureTravels(reservations));
-        // 하루 이내 등록된 도시
-        cityRepository.findTop10ByCreatedAtIsAfterOrderByCreatedAtDesc(now.minusDays(1));
-        // 최근 일주일 이내에 한번 이상 조회된 도시
-        citySearchHistoryRepository.findTop10ByUserIdAndSearchedAtIsAfterOrderBySearchedAtDesc(userId, now.minusDays(7));
-        // 위의 조건에 해당하지 않는 모든 도시 : 무작위
+        List<City> activeCities = getCitiesByTravels(travelService.getActiveTravels(reservations));
 
-        return null;
+        //여행이 예정된 도시 : 여행 시작일이 가까운 것부터
+        List<City> futureCities = getCitiesByTravels(travelService.getFutureTravels(reservations));
+        if(!ObjectUtils.isEmpty(futureCities)){
+            tempList.addAll(futureCities);
+        }
+
+        // 하루 이내 등록된 도시
+        List<City> addedCities = cityRepository.findTop10ByCreatedAtIsAfterOrderByCreatedAtDesc(now.minusDays(1));
+        if(!ObjectUtils.isEmpty(addedCities)){
+            tempList.addAll(addedCities);
+        }
+
+        // 최근 일주일 이내에 한번 이상 조회된 도시
+        List<City> searchedCities = citySearchHistoryService.getSearchedCities(userId);
+        System.out.println("searchedCities = " + searchedCities);
+        if(!ObjectUtils.isEmpty(searchedCities)){
+            tempList.addAll(searchedCities);
+        }
+
+        // 제외할 도시 식별번호
+        Set<Long> cityIds = tempList.stream().map(City::getCityId).collect(Collectors.toSet());
+        List<City> randomCities = getRandomCities(cityIds);
+        // 위의 조건에 해당하지 않는 모든 도시 : 무작위
+        if(tempList.size() < MAX_SIZE && !ObjectUtils.isEmpty(randomCities)) {
+            int addSize = MAX_SIZE - tempList.size();
+            List<City> cities = randomCities.subList(0, addSize - 1);
+            tempList.addAll(cities);
+        }
+
+        // 여행 중 도시는 무조건 추가, 중복 가능
+        List<City> resultCities = new ArrayList<>();
+        if(!ObjectUtils.isEmpty(activeCities)){
+            resultCities.addAll(activeCities);
+        }
+
+        // 중복 제거
+        List<City> filterList = tempList.stream().distinct().collect(Collectors.toList());
+
+        if(filterList.size() < MAX_SIZE) {
+            resultCities.addAll(tempList);
+        }else if(filterList.size() >= MAX_SIZE){
+            resultCities.addAll(filterList.subList(0, MAX_SIZE - 1));
+        }
+
+        List<CityDto> cityDtos = resultCities.stream().map(city -> new CityDto(city)).collect(Collectors.toList());
+
+        return cityDtos;
     }
 
     public List<City> getCitiesByTravels(List<Travel> travels) {
         return travels.stream().map(Travel::getCity).collect(Collectors.toList());
+    }
+
+    public List<City> getRandomCities(Collection<Long> idList) {
+        List<City> cities = cityRepository.findByCityIdNotIn(idList);
+        if(cities.isEmpty()){
+            return null;
+        }
+        Collections.shuffle(cities);
+
+        return cities;
     }
 }

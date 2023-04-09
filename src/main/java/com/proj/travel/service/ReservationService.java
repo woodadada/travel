@@ -28,6 +28,10 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
 
+    public Reservation createReservation(Reservation reservation) {
+        return reservationRepository.save(reservation);
+    }
+
     public List<Reservation> getReservations(Long userId) {
         List<Reservation> reservations = reservationRepository.findAllByUserId(userId);
         return reservations;

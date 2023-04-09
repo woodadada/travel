@@ -1,16 +1,13 @@
 package com.proj.travel.controller;
 
 import com.proj.travel.model.dto.CityDto;
-import com.proj.travel.model.request.CityCreateRequest;
 import com.proj.travel.model.response.APIResponse;
 import com.proj.travel.service.CityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
 import java.util.List;
 
 /**
