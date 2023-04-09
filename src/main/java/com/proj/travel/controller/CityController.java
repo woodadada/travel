@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
+import java.util.List;
 
 /**
  * packageName   : com.proj.travel.controller
@@ -51,14 +52,14 @@ public class CityController {
 
     // 단일 도시 조회
     @GetMapping("/{id}")
-    public APIResponse<CityDto> getCity(@PathVariable("id") long id){
-        return APIResponse.success(cityService.findCity(id));
+    public APIResponse<CityDto> getCity(@PathVariable("id") long id, @RequestParam(name = "userid") long userId){
+        return APIResponse.success(cityService.findCity(id, userId));
     }
 
     // 사용자별 도시 목록 조회
     @GetMapping("/user/{id}")
-    public ResponseEntity<?> findCityByUserId(){
-        return ResponseEntity.ok("test");
+    public APIResponse<List<CityDto>> findCityByUserId(@PathVariable("id") long userId){
+        return APIResponse.success(cityService.findCitiesByUserId(userId));
     }
 
 }

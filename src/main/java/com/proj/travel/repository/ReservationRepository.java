@@ -5,6 +5,8 @@ import com.proj.travel.model.entity.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * packageName   : com.proj.travel.repository
  * fileName      : ReservationRepository
@@ -18,4 +20,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    List<Reservation> findAllByUserId(Long userId);
 }

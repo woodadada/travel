@@ -4,16 +4,19 @@ import com.proj.travel.constant.ErrorCode;
 import com.proj.travel.exception.SiteException;
 import com.proj.travel.model.dto.CityDto;
 import com.proj.travel.model.entity.City;
+import com.proj.travel.model.entity.Reservation;
 import com.proj.travel.model.entity.Travel;
-import com.proj.travel.model.request.CityCreateRequest;
 import com.proj.travel.repository.CityRepository;
+import com.proj.travel.repository.CitySearchHistoryRepository;
 import com.proj.travel.repository.TravelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * packageName   : com.proj.travel.service
@@ -33,6 +36,11 @@ public class CityService {
 
     private final CityRepository cityRepository;
     private final TravelRepository travelRepository;
+    private final TravelService travelService;
+    private final ReservationService reservationService;
+    private final CitySearchHistoryRepository citySearchHistoryRepository;
+    private final CitySearchHistoryService citySearchHistoryService;
+
 
     public CityDto createCity(CityDto cityDto) {
         City city = new City(cityDto);
@@ -62,15 +70,17 @@ public class CityService {
         return true;
     }
 
-    public CityDto findCity(Long id) {
+    public CityDto findCity(Long id, Long userId) {
         Optional<City> byId = cityRepository.findById(id);
         if (byId.isPresent()) {
+            citySearchHistoryService.upsertCitySearchHistory(userId, id);
             return new CityDto(byId.get());
         }
         return null;
     }
 
-    public List<City> findCities() {
+    // 사용자 별 도시 목록 조회
+    public List<CityDto> findCitiesByUserId(Long userId) {
         /**
          * 사용자별 도시 목록 조회 API
          * 기본적으로 중복 없이 상위 10개 도시만 노출 (Pagination 없음)
@@ -82,7 +92,23 @@ public class CityService {
          * 최근 일주일 이내에 한 번 이상 조회된 도시 : 가장 최근에 조회한 것부터
          * 위의 조건에 해당하지 않는 모든 도시 : 무작위
          */
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Reservation> reservations = reservationService.getReservations(userId);
+        //여행 중인 도시 : 여행 시작일이 빠른 것부터
+        getCitiesByTravels(travelService.getActiveTravels(reservations));
+        //여행이 예정된 도시 : 여행 시작일이 가까운 것부터
+        getCitiesByTravels(travelService.getFutureTravels(reservations));
+        // 하루 이내 등록된 도시
+        cityRepository.findTop10ByCreatedAtIsAfterOrderByCreatedAtDesc(now.minusDays(1));
+        // 최근 일주일 이내에 한번 이상 조회된 도시
+        citySearchHistoryRepository.findTop10ByUserIdAndSearchedAtIsAfterOrderBySearchedAtDesc(userId, now.minusDays(7));
+        // 위의 조건에 해당하지 않는 모든 도시 : 무작위
 
         return null;
+    }
+
+    public List<City> getCitiesByTravels(List<Travel> travels) {
+        return travels.stream().map(Travel::getCity).collect(Collectors.toList());
     }
 }

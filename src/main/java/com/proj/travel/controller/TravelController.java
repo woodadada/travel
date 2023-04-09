@@ -37,12 +37,20 @@ public class TravelController {
     }
 
     // 여행 수정
+    @PutMapping("/")
+    public APIResponse<TravelDto> updateCity(@Valid @RequestBody TravelDto travelDto){
+        return APIResponse.success(travelService.updateTravel(travelDto));
+    }
 
     // 여행 삭제
+    @DeleteMapping("/{id}")
+    public APIResponse<Boolean> deleteTravel(@PathVariable("id") long id){
+        return APIResponse.success(travelService.deleteTravel(id));
+    }
 
     // 단일 여행 조회
     @GetMapping("/{id}")
-    public ResponseEntity<?> findTravel(){
-        return ResponseEntity.ok("test");
+    public APIResponse<TravelDto> getTravel(@PathVariable("id") long id){
+        return APIResponse.success(travelService.findTravel(id));
     }
 }
