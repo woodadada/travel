@@ -1,0 +1,19 @@
+spring:
+  sql:
+    init:c
+      mode: always
+  jpa:
+    hibernate:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /travel;MODE=MYSQL
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/travel;MODE=MYSQL
+    username: sa
+    password: 1234
