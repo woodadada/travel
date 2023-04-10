@@ -47,12 +47,6 @@ public class Travel extends BaseTimeEntity{
     @Column
     private LocalDateTime endTime;
 
-//    @Column
-//    private LocalDateTime createdAt;
-//
-//    @Column
-//    private LocalDateTime updatedAt;
-
     public void setCity(City city) {
         this.city = city;
     }
@@ -63,7 +57,5 @@ public class Travel extends BaseTimeEntity{
         this.city = City.builder().cityId(travelDto.getCityId()).build();
         this.startTime = travelDto.getStartTime();
         this.endTime = travelDto.getEndTime();
-//        this.createdAt = travelDto.getCreatedAt();
-//        this.updatedAt = travelDto.getUpdatedAt();
     }
 }

@@ -30,13 +30,13 @@ public class CityController {
     private final CityService cityService;
 
     // 도시 등록
-    @PostMapping("/")
+    @PostMapping
     public APIResponse<CityDto> createCity(@Valid @RequestBody CityDto cityDto){
         return APIResponse.success(cityService.createCity(cityDto));
     }
 
     // 도시 수정
-    @PutMapping("/")
+    @PutMapping
     public APIResponse<CityDto> updateCity(@Valid @RequestBody CityDto cityDto){
         return APIResponse.success(cityService.updateCity(cityDto));
     }

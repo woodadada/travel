@@ -1,7 +1,11 @@
 package com.proj.travel.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.proj.travel.model.entity.City;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -18,6 +22,9 @@ import java.time.LocalDateTime;
  * 2023/04/08       kang_jungwoo         최초 생성
  */
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CityDto {
 
     private Long cityId;
