@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "CITY_SEARCH_HISTORYS")
+@Table(name = "CITY_SEARCH_HISTORIES")
 public class CitySearchHistory {
 
     @Id
