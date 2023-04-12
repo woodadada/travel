@@ -42,7 +42,7 @@ public class TravelApplication implements CommandLineRunner {
         List<City> cityList = new ArrayList<>();
         List<Travel> travelList = new ArrayList<>();
         List<Reservation> reservationList = new ArrayList<>();
-        List<String> strings = Arrays.asList("서울", "도쿄", "싱가포르", "홍콩", "라스베가스", "뉴욕", "파리", "베를린", "베이징", "카이로", "남극");
+        List<String> strings = Arrays.asList("서울", "도쿄", "싱가포르", "홍콩", "라스베가스", "뉴욕", "파리", "베를린", "베이징", "카이로");
 
         for (int i = 1; i <= strings.size(); i++) {
             User user = User.builder().name("강정우" + i).build();
@@ -65,7 +65,7 @@ public class TravelApplication implements CommandLineRunner {
         cityRepository.saveAll(cityList);
         travelRepository.saveAll(travelList);
         List<User> findUserList = userRepository.findAll();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 9; i++) {
             Reservation reservation = Reservation.builder().travel(travelList.get(i)).userId(findUserList.get(i).getUserId()).build();
             reservationList.add(reservation);
         }

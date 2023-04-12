@@ -157,6 +157,9 @@ public class CityService {
     }
 
     public List<City> getCitiesByTravels(List<Travel> travels) {
+        if(ObjectUtils.isEmpty(travels)) {
+            return null;
+        }
         return travels.stream().map(Travel::getCity).collect(Collectors.toList());
     }
 
