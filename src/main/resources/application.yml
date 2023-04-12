@@ -16,6 +16,6 @@ spring:
       path: /travel;MODE=MYSQL
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/travel;MODE=MYSQL
+    url: jdbc:h2:mem://localhost/~/travel;MODE=MYSQL
     username: sa
     password: 1234
