@@ -26,4 +26,6 @@ public interface CityRepository extends JpaRepository<City, Long> {
     List<City> findTop10ByCreatedAtIsAfterOrderByCreatedAtDesc(LocalDateTime now);
 
     List<City> findByCityIdNotIn(Collection<Long> idList);
+
+    boolean existsById(Long id);
 }

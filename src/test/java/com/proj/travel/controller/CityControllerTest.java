@@ -1,12 +1,9 @@
 package com.proj.travel.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.proj.travel.model.dto.CityDto;
 import com.proj.travel.model.entity.City;
 import com.proj.travel.repository.CityRepository;
-import com.proj.travel.service.CityService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,7 +14,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
@@ -42,7 +38,6 @@ class CityControllerTest {
 
     @Autowired
     private CityRepository cityRepository;
-
 
     @Test
     void 도시등록() throws Exception {
@@ -105,7 +100,6 @@ class CityControllerTest {
     @Test
     void 사용자별도시조회() throws Exception {
         //given
-
         //when
 
         //then

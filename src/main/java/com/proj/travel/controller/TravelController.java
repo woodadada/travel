@@ -31,13 +31,13 @@ public class TravelController {
     private final TravelService travelService;
 
     // 여행 등록
-    @PostMapping("/")
+    @PostMapping
     public APIResponse<TravelDto> createCity(@Valid @RequestBody TravelDto travelDto){
         return APIResponse.success(travelService.createTravel(travelDto));
     }
 
     // 여행 수정
-    @PutMapping("/")
+    @PutMapping
     public APIResponse<TravelDto> updateCity(@Valid @RequestBody TravelDto travelDto){
         return APIResponse.success(travelService.updateTravel(travelDto));
     }

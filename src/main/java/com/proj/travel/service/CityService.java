@@ -4,6 +4,7 @@ import com.proj.travel.constant.ErrorCode;
 import com.proj.travel.exception.SiteException;
 import com.proj.travel.model.dto.CityDto;
 import com.proj.travel.model.entity.City;
+import com.proj.travel.model.entity.CitySearchHistory;
 import com.proj.travel.model.entity.Reservation;
 import com.proj.travel.model.entity.Travel;
 import com.proj.travel.repository.CityRepository;
@@ -11,6 +12,7 @@ import com.proj.travel.repository.TravelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
@@ -48,14 +50,16 @@ public class CityService {
         return new CityDto(save);
     }
 
+    @Transactional
     public CityDto updateCity(CityDto cityDto) {
         City city = cityRepository.findById(cityDto.getCityId())
                 .orElseThrow(() -> new SiteException(ErrorCode.NOT_FOUND_CITY));
-        City build = City.builder().cityId(city.getCityId()).cityName(city.getCityName()).build();
+        City build = City.builder().cityId(city.getCityId()).cityName(cityDto.getCityName()).build();
         City save = cityRepository.save(build);
         return new CityDto(save);
     }
 
+    @Transactional
     public boolean deleteCity(Long id) {
         City city = cityRepository.findById(id)
                 .orElseThrow(() -> new SiteException(ErrorCode.NOT_FOUND_CITY));
@@ -64,6 +68,11 @@ public class CityService {
         List<Travel> travels = travelRepository.findByCity(city);
         if(!travels.isEmpty()) {
             throw new SiteException(ErrorCode.DELETE_CITY_BAD_REQUEST);
+        }
+
+        List<CitySearchHistory> citySearchHistories = citySearchHistoryService.getCitySearchHistories(city);
+        for (CitySearchHistory citySearchHistory : citySearchHistories) {
+            citySearchHistory.setCity(null);
         }
 
         cityRepository.delete(city);
@@ -113,7 +122,6 @@ public class CityService {
 
         // 최근 일주일 이내에 한번 이상 조회된 도시
         List<City> searchedCities = citySearchHistoryService.getSearchedCities(userId);
-        System.out.println("searchedCities = " + searchedCities);
         if(!ObjectUtils.isEmpty(searchedCities)){
             tempList.addAll(searchedCities);
         }

@@ -42,9 +42,9 @@ public class TravelApplication implements CommandLineRunner {
         List<City> cityList = new ArrayList<>();
         List<Travel> travelList = new ArrayList<>();
         List<Reservation> reservationList = new ArrayList<>();
-        List<String> strings = Arrays.asList("서울", "도쿄", "싱가포르", "홍콩", "라스베가스", "뉴욕", "파리", "베를린", "베이징", "카이로");
+        List<String> strings = Arrays.asList("서울", "도쿄", "싱가포르", "홍콩", "라스베가스", "뉴욕", "파리", "베를린", "베이징", "카이로", "남극");
 
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= strings.size(); i++) {
             User user = User.builder().name("강정우" + i).build();
             userList.add(user);
 

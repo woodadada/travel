@@ -2,10 +2,7 @@ package com.proj.travel.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.proj.travel.model.entity.City;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;

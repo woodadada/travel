@@ -2,6 +2,7 @@ package com.proj.travel.service;
 
 import com.proj.travel.constant.ErrorCode;
 import com.proj.travel.exception.SiteException;
+import com.proj.travel.model.dto.CityDto;
 import com.proj.travel.model.entity.*;
 import com.proj.travel.repository.CityRepository;
 import com.proj.travel.repository.CitySearchHistoryRepository;
@@ -52,6 +53,9 @@ class CityServiceTest {
 
     @Autowired
     private CitySearchHistoryRepository citySearchHistoryRepository;
+
+    @Autowired
+    private CityService cityService;
 
     @Test
     void 도시생성() {
@@ -115,20 +119,6 @@ class CityServiceTest {
 
     @Test
     void 도시단일조회() {
-        //given
-        City city = City.builder().cityName("프랑크푸르트").build();
-        City saveCity = cityRepository.save(city);
-
-        //when
-        Optional<City> byId = cityRepository.findById(city.getCityId());
-        City findCity = byId.get();
-
-        //then
-        assertEquals(findCity.getCityName(), city.getCityName());
-    }
-
-    @Test
-    void 사용자별도시조회() {
         //given
         City city = City.builder().cityName("프랑크푸르트").build();
         City saveCity = cityRepository.save(city);
@@ -257,5 +247,33 @@ class CityServiceTest {
         List<City> all = cityRepository.findAll();
 
         assertNotEquals(cities.size(), all.size());
+    }
+
+    @Test
+    void 사용자별도시조회() {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        // 유저 저장
+        User saveUser = userRepository.save(User.builder().name("호랑이").build());
+        // 도시 저장
+        City saveCity = cityRepository.save(City.builder().cityName("백두산").build());
+        City searchCity = cityRepository.save(City.builder().cityName("만리장성").build());
+        // 여행 중인 여행
+        Travel saveTravel = travelRepository.save(Travel.builder()
+                .city(saveCity)
+                .title(saveCity.getCityName() + " 여행")
+                .startTime(now.minusDays(2))
+                .endTime(now.plusDays(3)).build());
+        // 예약 생성
+        reservationService.createReservation(Reservation.builder().userId(saveUser.getUserId()).travel(saveTravel).build());
+        // 검색 도시 생성
+        citySearchHistoryRepository.save(CitySearchHistory.builder().city(searchCity).userId(saveUser.getUserId()).searchedAt(now).build());
+
+        //when
+        List<CityDto> citiesByUserId = cityService.findCitiesByUserId(saveUser.getUserId());
+
+        //then
+        assertNotNull(citiesByUserId);
+        assertEquals(citiesByUserId.get(0).getCityName(), saveCity.getCityName());
     }
 }

@@ -63,4 +63,8 @@ public class CitySearchHistoryService {
 
         return searchedCities.stream().map(CitySearchHistory::getCity).collect(Collectors.toList());
     }
+
+    public List<CitySearchHistory> getCitySearchHistories(City city) {
+        return citySearchHistoryRepository.findByCity(city);
+    }
 }

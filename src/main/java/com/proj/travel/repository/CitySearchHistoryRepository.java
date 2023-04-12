@@ -24,4 +24,6 @@ public interface CitySearchHistoryRepository extends JpaRepository<CitySearchHis
     List<CitySearchHistory> findTop10ByUserIdAndSearchedAtIsAfterOrderBySearchedAtDesc(Long userId, LocalDateTime now);
 
     CitySearchHistory findByUserIdAndCity(Long userId, City city);
+
+    List<CitySearchHistory> findByCity(City city);
 }

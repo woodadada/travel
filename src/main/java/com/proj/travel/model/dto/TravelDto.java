@@ -2,7 +2,10 @@ package com.proj.travel.model.dto;
 
 import com.proj.travel.model.entity.City;
 import com.proj.travel.model.entity.Travel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -23,6 +26,9 @@ import java.time.LocalDateTime;
  * 2023/04/08       kang_jungwoo         최초 생성
  */
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TravelDto {
 
     private Long travelId;

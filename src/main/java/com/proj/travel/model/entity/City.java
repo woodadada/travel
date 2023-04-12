@@ -26,8 +26,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "CITIES")
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(callSuper=false)
 public class City extends BaseTimeEntity {
 
     @Id
@@ -41,7 +40,5 @@ public class City extends BaseTimeEntity {
     public City(CityDto cityDto) {
         this.cityId = cityDto.getCityId();
         this.cityName = cityDto.getCityName();
-//        this.createdAt = cityDto.getCreatedAt();
-//        this.updatedAt = cityDto.getUpdatedAt();
     }
 }

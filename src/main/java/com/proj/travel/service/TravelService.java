@@ -6,10 +6,13 @@ import com.proj.travel.model.dto.TravelDto;
 import com.proj.travel.model.entity.City;
 import com.proj.travel.model.entity.Reservation;
 import com.proj.travel.model.entity.Travel;
+import com.proj.travel.repository.CityRepository;
 import com.proj.travel.repository.TravelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -37,10 +40,17 @@ public class TravelService {
 
     private final ReservationService reservationService;
 
+    private final CityRepository cityRepository;
+
+    @Transactional
     public TravelDto createTravel(TravelDto travelDto) {
         LocalDateTime now = LocalDateTime.now();
-        if(now.isBefore(travelDto.getEndTime())) {
+        if(travelDto.getEndTime().isBefore(now)) {
             throw new SiteException(ErrorCode.TRAVEL_END_TIME_ERROR);
+        }
+
+        if(!cityRepository.existsById(travelDto.getCityId())) {
+            throw new SiteException(ErrorCode.NOT_FOUND_CITY);
         }
 
         Travel travel = new Travel(travelDto);
@@ -48,13 +58,19 @@ public class TravelService {
         return new TravelDto(save);
     }
 
+    @Transactional
     public TravelDto updateTravel(TravelDto travelDto) {
         LocalDateTime now = LocalDateTime.now();
-        if(now.isBefore(travelDto.getEndTime())) {
+        if(travelDto.getEndTime().isBefore(now)) {
             throw new SiteException(ErrorCode.TRAVEL_END_TIME_ERROR);
         }
+
         Travel travel = travelRepository.findById(travelDto.getTravelId())
                 .orElseThrow(() -> new SiteException(ErrorCode.NOT_FOUND_TRAVEL));
+
+        if(!cityRepository.existsById(travelDto.getCityId())) {
+            throw new SiteException(ErrorCode.NOT_FOUND_CITY);
+        }
 
         Travel build = Travel.builder().travelId(travelDto.getTravelId())
                 .city(City.builder().cityId(travelDto.getCityId()).build())
@@ -67,12 +83,17 @@ public class TravelService {
         return new TravelDto(save);
     }
 
+    @Transactional
     public boolean deleteTravel(Long id) {
         Travel travel = travelRepository.findById(id)
                 .orElseThrow(() -> new SiteException(ErrorCode.NOT_FOUND_TRAVEL));
 
-        travelRepository.delete(travel);
+        List<Reservation> reservationsByTravel = reservationService.getReservationsByTravel(travel);
+        if(!ObjectUtils.isEmpty(reservationsByTravel)) {
+            throw new SiteException(ErrorCode.DELETE_RESERVATION_BAD_REQUEST);
+        }
 
+        travelRepository.delete(travel);
         return true;
     }
 

@@ -1,9 +1,6 @@
 package com.proj.travel.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,6 +17,7 @@ import java.time.LocalDateTime;
  * 2023/04/09       kang_jungwoo         최초 생성
  */
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

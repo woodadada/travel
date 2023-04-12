@@ -1,6 +1,7 @@
 package com.proj.travel.service;
 
 import com.proj.travel.model.entity.Reservation;
+import com.proj.travel.model.entity.Travel;
 import com.proj.travel.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,10 @@ public class ReservationService {
                 .collect(Collectors.toList());
 
         return activeReservations;
+    }
+
+    public List<Reservation> getReservationsByTravel(Travel travel) {
+        return reservationRepository.findReservationsByTravel(travel);
     }
 
 }
